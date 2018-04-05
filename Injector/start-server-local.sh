@@ -1,0 +1,1 @@
+ENV=DEV gunicorn server:app --reload --bind=0.0.0.0:3002

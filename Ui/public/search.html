@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Results | Movie Ratings Search Engine</title>
+
+    <script type='text/javascript' src='jquery.js?ver=1.11.0'></script>
+    <script type='text/javascript' src='jquery-migrate.min.js?ver=1.2.1'></script>
+
+    <!--[if IE]><style type="text/css">.ratemulti .starsbar .gdcurrent { -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)"; filter: alpha(opacity=70); }</style><![endif]-->
+
+
+    <link rel="stylesheet" type="text/css" media="all" href="style.css" />
+    <link rel="stylesheet" href="jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="./cmGauge.css" />
+    <script src="jquery-1.8.3.js"></script>
+    <script src="jquery-ui.js"></script>
+</head>
+
+<body class="search search-results">
+    <div class="header-wrap">
+        <div class="header">
+            <ul class="nav clearfix">
+                <li class="item">
+                    <a href="./">
+                        <img src="http://ui-cloud.com/wp-content/themes/uicloud-v2/images/icons/20px/icon-uicloud.png" />
+                    </a>
+                </li>
+                <li class="item screen">
+                    <a href="./">CZ4034 Information Retrieval</a>
+                </li>
+
+                <li class="item right">
+                    <form class="form-search" name="search_form" method="get" id="searchform" action="./search.html">
+                        <input type="text" value="Black Panther" placeholder="Enter keywords" name="s" id="s" />
+                        <input class="btn" type="submit" name="submit" id="searchsubmit" value="Search" />
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <span id="top"></span>
+
+    <div class="content-wrap background-3">
+        <div class="content master-width clearfix">
+            <div class="content-main">
+                <h1 class="title">
+                    Search Results for
+                    <em class="_queryString"></em>
+                </h1>
+                <div class="sub-title clearfix result-block" style="display:none;">
+                    <span id="resultCount">0</span> results were found.
+                    <span class="right" style="margin-right: 32px;">
+                    </span>
+
+                </div>
+                <div class="update-block" style="display: none; text-align: center;">
+                    <div style="height:200px; width: 200px; overflow: hidden; margin: 0 auto;">
+                        <div id="not_found" style="width: 100px; height: 100px; transform: scale(7); transform-origin: 40px 35px;"></div>
+                    </div>
+                    <h2>Opps... We could not find any movie related to your request.</h2>
+                    <p>Leave any movie name that you are looking for.</p>
+                    <form class="form-search" name="search_form" method="get" id="searchform" action="./update.html">
+                        <input type="text" placeholder="Movie name" name="s" id="s" />
+                        <!-- <input class="btn" type="submit" name="submit" id="searchsubmit" value="Search" /> -->
+                        <button type="submit" style="padding: 9px 20px;">Submit</button>
+                    </form>
+                </div>
+                <div id="loading-block" style="width: 160px; height: 160px; margin: 50px auto;"></div>
+                <div class="block block-gray result-block" style="margin-bottom:24px; display:none;">
+                    <h1>Search Results</h3>
+                        <div style="height: auto; overflow:hidden;">
+
+                            <div class="sub-title clearfix">
+                                <span class="pagination-wrap">
+                                    <div class="pagination">
+                                        <ul class='page-numbers'>
+                                        </ul>
+                                    </div>
+                                </span>
+                            </div>
+
+                            <ul class="grid-blog clearfix" id="movieList">
+                            </ul>
+
+                            <span class="pagination-wrap">
+                                <div class="pagination" current="1" total="5">
+                                    <ul class='page-numbers'>
+                                    </ul>
+                                </div>
+                            </span>
+
+
+                        </div>
+                </div>
+            </div>
+
+            <div class="sidebar" style="display: none; position: fixed; right: 10px;">
+                <div class="block block-blue">
+                    <h2>Movie</h2>
+                    <div id="movie-introduction"></div>
+                </div>
+                <div class="block block-blue">
+                    <h2>Reviews</h2>
+                    <div id="review-loading-block" style="width: 160px; height: 160px; margin: 50px auto;"></div>
+                    <div id="review-block" style="overflow: scroll; height: 50vh;">
+                        <div id="review-content"></div>
+                        <div id="click-more-review" style="width: 50px; height: 50px; margin: 0 auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--cycle2-->
+    <script type="text/javascript" src="jquery.cycle2.js"></script>
+    <script type="text/javascript" src="jquery.cycle2.center.js"></script>
+
+    <!--fancybox-->
+    <script type="text/javascript" src="jquery.fancybox.js"></script>
+    <link rel="stylesheet" href="jquery.fancybox.css" type="text/css" media="screen" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/4.13.0/bodymovin.min.js"></script>
+    <script src="./elasticsearch-js/elasticsearch.jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+
+    <script src="cmGauge.js"></script>
+
+    <script>
+        var animation = bodymovin.loadAnimation({
+            container: document.getElementById('loading-block'), // Required
+            path: 'loading.json', // Required
+            renderer: 'svg', // Required
+            loop: true, // Optional
+            autoplay: true, // Optional
+            name: "loading", // Name for future reference. Optional.
+        })
+        var animation2 = bodymovin.loadAnimation({
+            container: document.getElementById('review-loading-block'), // Required
+            path: 'loading.json', // Required
+            renderer: 'svg', // Required
+            loop: true, // Optional
+            autoplay: true, // Optional
+            name: "loading", // Name for future reference. Optional.
+        })
+        var animation3 = bodymovin.loadAnimation({
+            container: document.getElementById('click-more-review'), // Required
+            path: 'click.json', // Required
+            renderer: 'svg', // Required
+            loop: true, // Optional
+            autoplay: true, // Optional
+            name: "click", // Name for future reference. Optional.
+        })
+        var animation4 = bodymovin.loadAnimation({
+            container: document.getElementById('not_found'), // Required
+            path: 'not_found.json', // Required
+            renderer: 'svg', // Required
+            loop: true, // Optional
+            autoplay: true, // Optional
+            name: "not found", // Name for future reference. Optional.
+        })
+
+        function queryString(key) {
+            key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx meta chars
+            var match = location.search.match(new RegExp("[?&]" + key + "=([^&]+)(&|$)"));
+            return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+        }
+
+        function renderUpdateContainer() {
+            // Show content
+            jQuery('#loading-block').hide();
+            jQuery('.update-block').show();
+        }
+
+        function renderMovieContainer() {
+            renderMovieList();
+            renderPagination();
+
+            // Show content
+            jQuery('#loading-block').hide();
+            jQuery('.result-block').show();
+        }
+
+        function renderReviewContainer(selectedMovie) {
+            // Show content
+            jQuery('#review-block').hide();
+            jQuery('#review-loading-block').show();
+
+            jQuery('#review-block #review-content').html('');
+
+            fetchReview(selectedMovie);
+        }
+
+        function changePage(i) {
+            page = i;
+            renderMovieContainer();
+        }
+
+        function renderPagination() {
+            var html = '';
+            var numberOfPages = movies.length / 20;
+
+            for (var i = 0; i < numberOfPages; i++) {
+                html += '<li><span class="page-number'+ (i == page ? ' current' : '')+'" data-targetpage="'+i+'">'+(i+1)+'</span></li>'
+            }
+
+            jQuery('.pagination .page-numbers').html(html);
+            jQuery('.page-number').on('click', function() {
+                var targetPage = jQuery(this).data('targetpage');
+                changePage(parseInt(targetPage));
+            });
+        }
+
+        function renderReviewList(reviews) {
+            reviews.forEach(function(review_raw) {
+                var review = review_raw._source;
+                var html = '<div style="position: relative; margin-bottom: 20px;">'+
+                    '<span style="font-weight: 900;">'+review.user+'</span>'+
+                    '<p style="padding-right: 100px;">'+review.review+'</p>'+
+                    '<div style="position: absolute; right: 10px; top: 0px;"><div class="gauge gauge-medium gauge-red" style="float: right;">'+
+                        '<div class="gauge-arrow" data-percentage="'+((review.sentiment.polarity+1.0) / 0.02)+'" style="transform: rotate(0deg);"></div>'+
+                    '</div></div><hr />'+
+                    '</div>';
+                jQuery('#review-block #review-content').append(html);
+            });
+            jQuery('.gauge .gauge-arrow').cmGauge();
+
+            // Show content
+            jQuery('#review-loading-block').hide();
+            jQuery('#review-block').show();
+
+            var query = queryString('s');
+            var movieTitles = query.match(/".*"/);
+            var cleanMovieTitles = [];
+            if (movieTitles !== null && movieTitles.length > 0) {
+                movieTitles.forEach(function(title) {
+                    query = query.replace(title, '');
+                    cleanMovieTitles.push(title.slice(1, -1));
+                });
+            }
+
+            query = query.trim();
+
+            jQuery("#review-block #review-content").mark(query);
+            jQuery("#review-block #review-content").mark(cleanMovieTitles);
+        }
+
+        function fetchReview(selectedMovie) {
+            if (selectedMovie === null) {
+                return;
+            }
+
+            // Check if query contain double quote
+            // Get query
+            var query = queryString('s');
+            var originalQuery = '' + query;
+
+            var esQuery = {
+                must: []
+            };
+            var esQueryFilter = []
+
+            // Check if query contain double quote
+            var movieTitles = query.match(/".*"/);
+            if (movieTitles !== null && movieTitles.length > 0) {
+                movieTitles.forEach(function(title) {
+                    query = query.replace(title, '');
+                    esQuery['must'].push({
+                        bool: {
+                            should: [
+                                // {
+                                //     query_string: {
+                                //         default_field: 'review',
+                                //         query: title.slice(1, -1).replace(' ' , ' AND '),
+                                //     }
+                                // }
+                                {
+                                    match_phrase: {
+                                        review: title.slice(1, -1)
+                                    }
+                                }
+                            ]
+                        }
+                    });
+                });
+            }
+
+            query = query.trim();
+            
+            if (query.length > 0) {
+                esQuery['must'].push({
+                    bool: {
+                        should: [
+                                {
+                                match: {
+                                    tokens: query
+                                }
+                            }
+                        ]
+                    }
+                });
+            }
+
+            esQueryFilter.push({
+                match: {
+                    name: selectedMovie,
+                }
+            });
+
+            if (esQueryFilter.length > 0) {
+                esQuery['filter'] = esQueryFilter;
+            }
+
+            client.search({
+                scroll: '10m',
+                index: 'review',
+                type: 'rottentomato',
+                size: 50,
+                body: {
+                    query: {
+                        bool: esQuery
+                    }
+                }
+            }, function(err, resp) {
+                if (err !== undefined) {
+                    console.log(err, resp);
+                    alert("System down. Database is not alive");
+                    return;
+                }
+                scrollId = resp._scroll_id;
+                setTimeout(function() {
+                    // Handle content
+                    reviewPage = 0;
+                    renderReviewList(resp.hits.hits);
+                }, 2000);
+            });
+        }
+
+        function renderMovieList() {
+            var html = '';
+            
+            var movieSlice = movies.slice(page * 20, (page+1) * 20);
+
+            movieSlice.forEach(function(result, index) {
+                var movieInfo = result.info.hits.hits[0]._source;
+                var casts = JSON.parse(movieInfo.casts);
+                var plainCasts = [];
+
+                for (var index in casts) {
+                    var cast = casts[index];
+                    plainCasts.push(cast.name);
+                }
+                var castsString = plainCasts.join(', ');
+
+                var avgPolarity = result.polarity.value;
+                
+                html += '<li class="item movieItem" style="width: 98%;">'+
+                            '<div class="inner" style="cursor: pointer;" data-name="'+ result.key +'" data-poster="'+movieInfo.poster+'" data-year="'+movieInfo.year+'" data-casts="'+castsString+'" data-reviews="'+result.doc_count+'" data-polarity="'+avgPolarity+'">'+
+                                '<div class="block" style="position: relative;">'+
+                                    '<img src="'+movieInfo.poster+'" style="float: left; margin: 10px; width: 80px; height:80px;"/>' +
+                                    '<h2 class="title">'+
+                                        '<a href="#" title="'+ result.key +'">'+ result.key +'</a>'+
+                                    '</h2>'+
+                                    '<p>by'+
+                                        'Year '+movieInfo.year+' &middot;'+
+                                        '<a href="#">'+result.doc_count+' relevant comments</a>'+
+                                        '</br />by ' + castsString +
+                                    '</p>'+
+                                    '<div style="position: absolute; right: 10px; top: 50px;"><div class="gauge gauge-medium gauge-red" style="float: right;">'+
+                                        '<div class="gauge-arrow" data-percentage="'+((avgPolarity+1.0) / 0.02)+'" style="transform: rotate(0deg);"></div>'+
+                                    '</div></div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</li>';
+            })
+
+            jQuery('#movieList').html(html);
+            jQuery('.gauge .gauge-arrow').cmGauge();
+
+            jQuery('.movieItem .inner').on('click', function() {
+                var name = jQuery(this).data('name');
+                var poster = jQuery(this).data('poster');
+                var year = jQuery(this).data('year');
+                var casts = jQuery(this).data('casts');
+                var reviews = jQuery(this).data('reviews');
+                var polarity = jQuery(this).data('polarity');
+                jQuery('#movie-introduction').html(
+                    '<div class="inner" style="cursor: pointer;">'+
+                        '<div class="block" style="position: relative;">'+
+                            '<img src="'+poster+'" style="float: left; margin: 10px; width: 80px; height:80px;"/>' +
+                            '<h2 class="title">'+
+                                '<a href="#" title="'+ name +'">'+ name +'</a>'+
+                            '</h2>'+
+                            '<p>by'+
+                                'Year '+year+' &middot;'+
+                                '<a href="#">'+reviews+' relevant comments</a>'+
+                                '</br />by ' + casts +
+                            '</p>'+
+                            '<div style="position: absolute; right: 10px; top: 60px;"><div class="gauge gauge-medium gauge-red" style="float: right;">'+
+                                '<div class="gauge-arrow" data-percentage="'+((polarity+1.0) / 0.02)+'" style="transform: rotate(0deg);"></div>'+
+                            '</div></div>'+
+                        '</div>'+
+                    '</div>');
+                jQuery('.sidebar').slideDown();
+                jQuery('.gauge .gauge-arrow').cmGauge();
+                selectedMovie = name;
+                renderReviewContainer(selectedMovie);
+            });
+        }
+
+        function scrollReview() {
+            client.scroll({
+                scrollId: scrollId,
+                scroll: '10m'
+            }, function(err, resp) {
+                if (err !== undefined) {
+                    console.log(err, resp);
+                    alert("System down. Database is not alive");
+                    return;
+                }
+                renderReviewList(resp.hits.hits);
+            })
+        }
+
+        var movies = [];
+        var page = 0;
+        var reviewPage = 0;
+        var selectedMovie = null;
+        var client = null;
+        var scrollId = null;
+
+        jQuery(document).ready(function () {
+            // Show content
+            jQuery('.result-block').hide();
+            jQuery('#loading-block').show();
+
+            client = new jQuery.es.Client({
+                hosts: 'http://elastic:changeme@localhost:9200'
+            });
+            
+            // Get query
+            var query = queryString('s');
+            var originalQuery = '' + query;
+            jQuery('._queryString').text(query);
+            jQuery('#s').val(query);
+
+            var esQuery = {
+                must: []
+            };
+
+            // Check if query contain double quote
+            var movieTitles = query.match(/".*"/);
+            if (movieTitles !== null && movieTitles.length > 0) {
+                movieTitles.forEach(function(title) {
+                    query = query.replace(title, '');
+                    esQuery['must'].push({
+                        bool: {
+                            should: [
+                                {
+                                    match_phrase: {
+                                        review: title.slice(1, -1)
+                                    }
+                                },
+                                {
+                                    match_phrase: {
+                                        name: title.slice(1, -1)
+                                    }
+                                },
+                                // {
+                                //     query_string: {
+                                //         default_field: 'review',
+                                //         query: title.slice(1, -1).replace(' ' , ' AND '),
+                                //     }
+                                // },
+                                // {
+                                //     query_string: {
+                                //         default_field: 'name',
+                                //         query: title.slice(1, -1).replace(' ' , ' AND '),
+                                //     }
+                                // }
+                            ]
+                        }
+                    });
+                });
+            }
+
+            query = query.trim();
+            
+            if (query.length > 0) {
+                esQuery['must'].push({
+                    bool: {
+                        should: [
+                                {
+                                match: {
+                                    tokens: query
+                                }
+                            },
+                            {
+                                match: {
+                                    name: query
+                                }
+                            }
+                        ]
+                    }
+                });
+            }
+
+            // Initiate ES search
+            client.search({
+                // scroll: '10m',
+                index: 'review',
+                type: 'rottentomato',
+                size: 1,
+                body: {
+                    query: {
+                        bool: esQuery
+                    },
+                    aggs: {
+                        movie: {
+                            terms: {
+                                field: 'name.keyword',
+                                size: 200
+                            },
+                            aggs: {
+                                polarity: {
+                                    avg: {
+                                        field: "sentiment.polarity"
+                                    }
+                                },
+                                info : {
+                                    top_hits: {
+                                        size: 1, 
+                                        _source: {
+                                            include: ['casts', 'poster', 'year']
+                                        }
+                                    }
+                                } 
+                            },
+                        },
+                    },
+                }
+            }, function(err, resp) {
+                if (err !== undefined) {
+                    console.log(err, resp);
+                    alert("System down. Database is not alive");
+                    return;
+                }
+                setTimeout(function() {
+                    if (resp.aggregations.movie.buckets.length > 0) {
+                        
+                        // Show total
+                        jQuery('#resultCount').text(resp.aggregations.movie.buckets.length);
+
+                        movies = resp.aggregations.movie.buckets;
+                        // Handle content
+                        page = 0;
+                        renderMovieContainer();
+                    }
+                    else {
+                        renderUpdateContainer();
+                    }
+                }, 100);
+
+                jQuery('#click-more-review').on('click', function() {
+                    scrollReview();
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

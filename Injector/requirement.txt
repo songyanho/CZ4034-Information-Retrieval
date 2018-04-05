@@ -1,0 +1,6 @@
+falcon
+falcon-multipart
+elasticsearch
+textblob
+nltk
+pandas

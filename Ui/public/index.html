@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>IRCloud | Movie Ratings Search Engine</title>
+
+	<meta name="keywords" content="Movie ratings" />
+	<!-- <link rel='stylesheet' id='gdsr_style_main-css'  href='http://ui-cloud.com/wp-content/plugins/gd-star-rating/css/gdsr.css.php?t=1360100294&#038;s=a05i05m20k20c05r05%23121620243046%23121620243240%23s1pchristmas%23s1pcrystal%23s1pdarkness%23s1poxygen%23s1goxygen_gif%23s1pplain%23s1ppumpkin%23s1psoft%23s1pstarrating%23s1pstarscape%23t1pclassical%23t1pstarrating%23t1gstarrating_gif%23lsgflower&#038;o=off&#038;ver=1.9.22' type='text/css' media='all' /> -->
+	<link rel='stylesheet' id='gdsr_style_xtra-css' href='rating.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='prettify-gc-syntax-highlighter-css' href='prettify.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='contact-form-7-css' href='styles.css' type='text/css' media='all' />
+
+	<script type='text/javascript' src='jquery.js?ver=1.11.0'></script>
+	<script type='text/javascript' src='jquery-migrate.min.js?ver=1.2.1'></script>
+	<!-- <script type='text/javascript' src='gdsr.js?ver=1.9.22'></script> -->
+	<script type="text/javascript">
+	</script>
+	<!--[if IE]><style type="text/css">.ratemulti .starsbar .gdcurrent { -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)"; filter: alpha(opacity=70); }</style><![endif]-->
+	<style type="text/css">
+		.recentcomments a {
+			display: inline !important;
+			padding: 0 !important;
+			margin: 0 !important;
+		}
+	</style>
+
+	<link rel="stylesheet" type="text/css" media="all" href="style.css" />
+	<link rel="stylesheet" href="jquery-ui.css" />
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+
+</head>
+
+<body class="home blog">
+
+	<div class="header-wrap">
+		<div class="header">
+			<ul class="nav clearfix">
+				<li class="item">
+					<a href="ui.html">
+						<img src="icon-uicloud.png" />
+					</a>
+				</li>
+				<li class="item compact">
+					<a href="#menu">
+						<img src="http://ui-cloud.com/wp-content/themes/uicloud-v2/images/icons/20px/menu-white.png" />
+					</a>
+					<div class="menu menu-right">
+						<div class="block">
+							<ul class="sub-menu">
+								<li>
+									<a href="http://ui-cloud.com/browse/">Browse</a>
+								</li>
+								<li>
+									<a href="http://ui-cloud.com/button-builder/">Button Builder</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="item screen">
+					<a href="http://ui-cloud.com/browse/">CZ4034 Information Retrieval</a>
+				</li>
+
+				<li class="item right">
+					<form class="form-search" name="search_form" method="get" id="searchform" action="./search.html">
+						<input type="text" value="" placeholder="Enter movie keywords" name="s" id="s" />
+						<input class="btn" type="submit" name="submit" id="searchsubmit" value="Search" />
+					</form>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<span id="top"></span>
+
+	<div class="content-wrap background-3">
+		<div class="content master-width clearfix">
+
+			<img class="logo" src="logo-home.png" alt="NTU Logo" height="176" width="500">
+			<h1 style="display: none;">IR - Movie rating search engine</h1>
+			<h2>The smartest movie search engine in NTU.</h2>
+			<div class="home-note">
+				<a href="#" onclick="focussearch()">Search</a> through over
+				<b>100 thousands</b> movies or
+				<a href="/browse">browse</a>
+				<b>100 millions</b> movie ratings
+			</div>
+
+			<form class="search" name="search_form" method="get" id="searchform" action="./search.html">
+				<input class="search-input" type="text" value="" placeholder="Enter movie keywords" name="s" id="s" />
+				<input class="btn" type="submit" name="submit" id="searchsubmit" value="Search" />
+				<p>
+					e.g.
+					<a href="search.html?s=black+panther&submit=Search">Black Panther</a>,
+					<a href="search.html?s=pacific+rim+2&submit=Search">Pacific Rim 2</a>,
+					<a href="search.html?s=pitch+perfect+3&submit=Search">Pitch Perfect 3</a>
+				</p>
+			</form>
+
+		</div>
+	</div>
+
+	<!--cycle2-->
+	<script type="text/javascript" src="http://ui-cloud.com/wp-content/themes/uicloud-v2/js/jquery.cycle2.js"></script>
+	<script type="text/javascript" src="http://ui-cloud.com/wp-content/themes/uicloud-v2/js/jquery.cycle2.center.js"></script>
+
+	<!--fancybox-->
+	<script type="text/javascript" src="jquery.fancybox.js"></script>
+	<link rel="stylesheet" href="jquery.fancybox.css" type="text/css" media="screen" />
+
+	<script type="text/javascript" src="http://ui-cloud.com/wp-content/themes/uicloud-v2/js/base.js"></script>
+
+</body>
+
+</html>
